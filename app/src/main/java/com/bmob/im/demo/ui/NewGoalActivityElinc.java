@@ -48,6 +48,7 @@ public class NewGoalActivityElinc extends ActivityBase {
                     goal.setGoalContent(goal_content.getText().toString());
                     goal.setClaim(claim.getText().toString());
                     goal.setDay(numberPicker.getValue());
+                    goal.setOut(false);
                     goal.setAuthor(me);
                     goal.save(NewGoalActivityElinc.this, new SaveListener() {
                         @Override

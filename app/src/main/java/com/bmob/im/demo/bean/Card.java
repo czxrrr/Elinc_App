@@ -7,44 +7,49 @@ import cn.bmob.v3.datatype.BmobRelation;
  * Created by HUBIN on 2015/7/31.
  */
 public class Card extends BmobObject {
-    private User Cardsender;
-    private String claim;
-    private String goalContent;
+    private Goal goal;
+    private String cardClaim;
     private BmobRelation likedBy;
+    private BmobRelation reply;
+    private Integer likedByNum;
+
+    public Integer getLikedByNum() {
+        return likedByNum;
+    }
+
+    public void setLikedByNum(Integer likedByNum) {
+        this.likedByNum = likedByNum;
+    }
+
+    public String getCardClaim() {
+        return cardClaim;
+    }
+
+    public void setCardClaim(String cardClaim) {
+        this.cardClaim = cardClaim;
+    }
+
+    public BmobRelation getReply() {
+        return reply;
+    }
+
+    public void setReply(BmobRelation reply) {
+        this.reply = reply;
+    }
+
+    public Goal getGoal() {
+        return goal;
+    }
+
+    public void setGoal(Goal goal) {
+        this.goal = goal;
+    }
 
     public BmobRelation getLikedBy() {
         return likedBy;
     }
 
     public void setLikedBy(BmobRelation likedBy) {
-        this.likedBy = likedBy;
-    }
-
-    public User getCardsender() {
-        return Cardsender;
-    }
-
-    public void setCardsender(User cardsender) {
-        Cardsender = cardsender;
-    }
-
-    public String getClaim() {
-        return claim;
-    }
-
-    public void setClaim(String claim) {
-        this.claim = claim;
-    }
-
-    public String getGoalContent() {
-        return goalContent;
-    }
-
-    public void setGoalContent(String goalContent) {
-        this.goalContent = goalContent;
-    }
-
-    public void setlikedBy(BmobRelation likedBy) {
         this.likedBy = likedBy;
     }
 }

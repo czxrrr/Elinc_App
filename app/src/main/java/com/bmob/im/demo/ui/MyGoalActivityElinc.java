@@ -32,6 +32,7 @@ import cn.bmob.im.BmobUserManager;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobPointer;
+import cn.bmob.v3.datatype.BmobRelation;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
 
@@ -64,7 +65,7 @@ public class MyGoalActivityElinc extends ActivityBase {
             @Override
             public void onSuccess(List<Goal> object) {
                 goalNum = object.size();
-                Log.i("1",goalNum+"");
+                Log.i("goalNum",goalNum+"");
                 List<Map<String, String>> mapList = new ArrayList<>();
                 Map<String,String>map;
                 for (int i = 0; i < goalNum && i < 3; i++) {
@@ -102,11 +103,12 @@ public class MyGoalActivityElinc extends ActivityBase {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Toast.makeText(MyGoalActivityElinc.this,"click:"+button.getTag(),Toast.LENGTH_SHORT).show();
                     Card card = new Card();
-                    card.setClaim(goal[position].getClaim());
-                    card.setGoalContent(goal[position].getGoalContent());
-                    card.setCardsender(me);
+                    card.setGoal(goal[position]);
+                    card.setCardClaim(goal[position].getClaim());
+                    card.setLikedBy(new BmobRelation());
+                    card.setLikedByNum(0);
+                    card.setReply(new BmobRelation());
                     card.save(MyGoalActivityElinc.this, new SaveListener() {
                         @Override
                         public void onSuccess() {

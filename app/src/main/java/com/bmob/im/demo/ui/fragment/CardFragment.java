@@ -1,40 +1,53 @@
 package com.bmob.im.demo.ui.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bmob.im.demo.R;
+import com.bmob.im.demo.adapter.CardListAdapter;
+import com.bmob.im.demo.adapter.base.BaseListAdapter;
+import com.bmob.im.demo.adapter.base.ViewHolder;
 import com.bmob.im.demo.bean.Card;
-import com.bmob.im.demo.bean.Goal;
+import com.bmob.im.demo.bean.Question;
 import com.bmob.im.demo.bean.Tool;
 import com.bmob.im.demo.bean.User;
+import com.bmob.im.demo.ui.CardItemActivityElinc;
 import com.bmob.im.demo.ui.FragmentBase;
+import com.bmob.im.demo.ui.QuestionItemActivityElinc;
+import com.bmob.im.demo.util.CollectionUtils;
+import com.bmob.im.demo.view.xlist.XListView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.bmob.im.BmobUserManager;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobPointer;
 import cn.bmob.v3.datatype.BmobRelation;
+import cn.bmob.v3.listener.CountListener;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.UpdateListener;
 
-public class CardFragment extends FragmentBase {
+public class CardFragment extends FragmentBase implements XListView.IXListViewListener {
     private View view;
-    private List<Map<String,String>>mapList;
-    private MyAdapter myAdapter;
-    private ListView listView;
-    Map<String,String> map;
+    private List<Card>cardList;
+    private CardListAdapter myAdapter;
+    private XListView listView;
+    int curPage = 0;
+    final int pageCapacity=2;
      public CardFragment() {
         // Required empty public constructor
     }
@@ -48,95 +61,104 @@ public class CardFragment extends FragmentBase {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_goal, container, false);
-        initList();
+        view = inflater.inflate(R.layout.fragment_card, container, false);
         return view;
     }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        initList();
+    }
     private void initList(){
-        mapList = new ArrayList<>();
-        listView = (ListView)view.findViewById(R.id.goal_list);
-        myAdapter = new MyAdapter(getActivity(), mapList, R.layout.item_card_in_list_elinc,
-                new String[]{"goal_content", "claim", "day", "created_at"},
-                new int[]{R.id.goal_content, R.id.claim, R.id.day, R.id.created_at});
+        cardList = new ArrayList<>();
+        listView = (XListView)findViewById(R.id.card_list);
+        // 首先不允许加载更多
+        listView.setPullLoadEnable(true);
+        // 不允许下拉
+        listView.setPullRefreshEnable(true);
+        // 设置监听器
+        listView.setXListViewListener(this);
+        listView.pullRefreshing();
+        listView.setDividerHeight(2);
+        myAdapter = new CardListAdapter(getActivity(),cardList);
         listView.setAdapter(myAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent();
+                Bundle bundle = new Bundle();
+                String cardId = cardList.get(position - 1).getObjectId();
+                ShowToast("point" + position);
+                bundle.putString("cardId", cardId);
+                intent.putExtras(bundle);
+                intent.setClass(getActivity(), CardItemActivityElinc.class);
+                startAnimActivity(intent);
+            }
+        });
+        refreshList();
     }
     private void refreshList(){
         BmobQuery<Card>query = new BmobQuery<>();
+        query.order("-updatedAt");
+        query.setLimit(pageCapacity*(curPage+1));
+        query.include("goal");  // 希望在查询帖子信息的同时也把发布人的信息查询出来
         query.findObjects(getActivity(), new FindListener<Card>() {
             @Override
             public void onSuccess(List<Card> list) {
-                mapList.clear();
-                for (int i=0;i<list.size();i++){
-                    map = new HashMap<>();
-                    map.put("goal_content",list.get(i).getGoalContent());
-                    map.put("claim",list.get(i).getClaim());
-                    map.put("day",list.get(i).getClaim());
-                    map.put("created_at",list.get(i).getUpdatedAt());
-                    mapList.add(map);
+                if(list.size()!=cardList.size()) {
+                    Log.i("listsize:",""+list.size());
+                    cardList.clear();
+                    cardList.addAll(list);
+                    myAdapter.notifyDataSetChanged();
                 }
-                myAdapter.notifyDataSetChanged();
-                Tool.setListViewHeightBasedOnChildren(listView);
+                listView.stopRefresh();
             }
             @Override
             public void onError(int i, String s) {
-                Toast.makeText(getActivity(),"打卡记录获取失败",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "打卡记录获取失败", Toast.LENGTH_SHORT).show();
+                listView.stopRefresh();
             }
         });
     }
-
     @Override
     public void onResume() {
         super.onResume();
+    }
+    @Override
+    public void onRefresh() {
         refreshList();
     }
-
-    private class MyAdapter extends SimpleAdapter {
-        public MyAdapter(Context context, List<? extends Map<String, ?>> data, int resource, String[] from, int[] to) {
-            super(context, data, resource, from, to);
-        }
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            View view = super.getView(position, convertView, parent);
-            final Button add_good = (Button)view.findViewById(R.id.add_good);
-            final Button add_comment = (Button)view.findViewById(R.id.add_comment);
-            add_good.setTag(position);
-            add_comment.setTag(position);
-            add_good.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    setLike(position);
-                }
-            });
-            add_comment.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //Toast.makeText(getActivity(),"给"+position+"评论",Toast.LENGTH_SHORT).show();
-                }
-            });
-            return view;
-        }
-    }
-    private void setLike(Integer position){
-        User user = BmobUser.getCurrentUser(getActivity(), User.class);
-        String id;
-        Toast.makeText(getActivity(), "给" + position + "点赞", Toast.LENGTH_SHORT).show();
-        id = mapList.get(position).get("objectId");
-        Log.i("card_fragment",id+"");
-        Card card = new Card();
-        card.setObjectId(id);
-        BmobRelation relation = new BmobRelation();
-        relation.add(user);
-        card.setlikedBy(relation);
-        card.update(getActivity(), new UpdateListener() {
+    @Override
+    public void onLoadMore() {
+        BmobQuery<Card> query = new BmobQuery<>();
+        query.setSkip((curPage + 1) * pageCapacity);
+        query.setLimit(pageCapacity);
+        query.order("-updatedAt");
+        query.include("goal");  // 希望在查询帖子信息的同时也把发布人的信息查询出来
+        query.findObjects(getActivity(), new FindListener<Card>() {
             @Override
-            public void onSuccess() {
-                Tool.alert(getActivity(), "点赞成功");
+            public void onSuccess(List<Card> list) {
+                if (list.size() != 0) {
+                    cardList.addAll(list);
+                    curPage++;
+                    myAdapter.notifyDataSetChanged();
+                } else {
+                    ShowToast("数据加载完成");
+                    listView.setPullLoadEnable(false);
+                    refreshLoad();
+                }
             }
 
             @Override
-            public void onFailure(int arg0, String arg1) {
-                Tool.alert(getActivity(), "提交失败，请检查网络");
+            public void onError(int i, String s) {
+                ShowToast("查询失败");
+                refreshLoad();
             }
         });
+    }
+    private void refreshLoad(){
+        if (listView.getPullLoading()) {
+            listView.stopLoadMore();
+        }
     }
 }

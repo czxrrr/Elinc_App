@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "com.bmob.im.demo"
-        minSdkVersion 8
-        targetSdkVersion 14
+        minSdkVersion  14
+        targetSdkVersion 22
     }
 
     buildTypes {
@@ -21,7 +21,6 @@ android {
 dependencies {
     compile files('libs/baidumapapi_v3_0_0.jar')
     compile files('libs/BmobIM_V1.1.8beta_20150408.jar')
-    compile files('libs/BmobSDK_V3.3.5_0408.jar')
     compile files('libs/locSDK_4.2.jar')
     compile files('libs/photoview-library-1.2.2.jar')
     compile files('libs/universal-image-loader-1.9.2_sources.jar')

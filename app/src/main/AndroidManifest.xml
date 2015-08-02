@@ -213,6 +213,10 @@
             android:name=".ui.MyGoalActivityElinc"
             android:label="@string/title_activity_my_goal_activity_elinc" >
         </activity>
+        <activity
+            android:name=".ui.CardItemActivityElinc"
+            android:label="@string/title_activity_card_item_activity_elinc" >
+        </activity>
     </application>
 
 </manifest>
