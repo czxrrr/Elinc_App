@@ -41,6 +41,7 @@ public class FirstUpdateInfoElinc extends BaseActivity {
         sex_woman= (RadioButton) findViewById(R.id.sex_woman);
         sex_man= (RadioButton) findViewById(R.id.sex_man);
         sex_man.setChecked(true);
+        chosenSex = true;
         sex.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == sex_woman.getId()) {
