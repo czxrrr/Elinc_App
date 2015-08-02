@@ -18,7 +18,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,18 +28,13 @@ import cn.bmob.im.bean.BmobInvitation;
 import cn.bmob.im.bean.BmobMsg;
 import cn.bmob.im.config.BmobConfig;
 import cn.bmob.im.inteface.EventListener;
-import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.BmobUser;
-import cn.bmob.v3.datatype.BmobPointer;
-import cn.bmob.v3.listener.FindListener;
 
 import com.bmob.im.demo.CustomApplcation;
 import com.bmob.im.demo.MyMessageReceiver;
 import com.bmob.im.demo.R;
-import com.bmob.im.demo.bean.Goal;
 import com.bmob.im.demo.bean.User;
 import com.bmob.im.demo.ui.fragment.ContactFragment;
-import com.bmob.im.demo.ui.fragment.GoalFragment;
+import com.bmob.im.demo.ui.fragment.CardFragment;
 import com.bmob.im.demo.ui.fragment.QuestionFragment;
 import com.bmob.im.demo.util.ImageLoadOptions;
 import com.bumptech.glide.Glide;
@@ -58,7 +52,7 @@ import java.util.List;
  * @date 2014-5-29 下午2:45:35
  */
 public class MainActivity extends ActivityBase implements EventListener{
-	private GoalFragment goalFragment;
+	private CardFragment cardFragment;
 	private ContactFragment contactFragment;
 	private QuestionFragment questionFragment;
 	private DrawerLayout mDrawerLayout;
@@ -276,11 +270,11 @@ public class MainActivity extends ActivityBase implements EventListener{
 	}
 
 	private void setupViewPager(ViewPager viewPager) {
-		goalFragment = new GoalFragment();
+		cardFragment = new CardFragment();
 		contactFragment = new ContactFragment();
 		//recentFragment = new RecentFragment();
 		questionFragment = new QuestionFragment();
-		Fragment[] fragments = new Fragment[]{goalFragment, contactFragment, questionFragment};
+		Fragment[] fragments = new Fragment[]{cardFragment, contactFragment, questionFragment};
 		Adapter adapter = new Adapter(getSupportFragmentManager());
 		adapter.addFragment(fragments[0], "目标");
 		adapter.addFragment(fragments[1], "学伴");
