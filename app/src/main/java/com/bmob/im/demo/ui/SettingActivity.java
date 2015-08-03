@@ -113,7 +113,7 @@ public class SettingActivity extends ActivityBase implements View.OnClickListene
                 startAnimActivity(new Intent(this,BlackListActivity.class));
                 break;
 //            case R.id.layout_info:// 启动到个人资料页面
-//                Intent intent =new Intent(this,SetMyInfoActivity.class);
+//                Intent intent =new Intent(this,InfoActivity.class);
 //                intent.putExtra("from", "me");
 //                startActivity(intent);
 //                break;

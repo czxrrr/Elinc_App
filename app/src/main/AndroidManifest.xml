@@ -105,7 +105,7 @@
         <activity
             android:name=".ui.ChatActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-        <activity android:name=".ui.SetMyInfoActivity" />
+        <activity android:name=".ui.InfoActivity" />
         <activity
             android:name=".ui.RegisterActivityElinc"
             android:label="@string/app_name" />

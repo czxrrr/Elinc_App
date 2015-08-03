@@ -175,7 +175,7 @@ public class NearPeopleActivity extends ActivityBase implements IXListViewListen
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 		// TODO Auto-generated method stub
 		User user = (User) adapter.getItem(position-1);
-		Intent intent =new Intent(this,SetMyInfoActivity.class);
+		Intent intent =new Intent(this,InfoActivity.class);
 		intent.putExtra("from", "add");
 		intent.putExtra("username", user.getUsername());
 		startAnimActivity(intent);		

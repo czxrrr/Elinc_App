@@ -57,14 +57,14 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 /**
  * 个人资料页面
  * 
- * @ClassName: SetMyInfoActivity
+ * @ClassName: InfoActivity
  * @Description: TODO
  * @author smile
  * @date 2014-6-10 下午2:55:19
  */
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 @SuppressLint({ "SimpleDateFormat", "ClickableViewAccessibility", "InflateParams" })
-public class SetMyInfoActivity extends ActivityBase implements OnClickListener {
+public class InfoActivity extends ActivityBase implements OnClickListener {
 
 	TextView tv_set_name, tv_set_nick, tv_set_gender;
 	ImageView iv_set_avator, iv_arraw, iv_nickarraw;
@@ -129,7 +129,8 @@ public class SetMyInfoActivity extends ActivityBase implements OnClickListener {
 			//不管对方是不是你的好友，均可以发送消息--BmobIM_V1.1.2修改
 			btn_chat.setVisibility(View.VISIBLE);
 			btn_chat.setOnClickListener(this);
-			if (from.equals("add")) {// 从附近的人列表添加好友--因为获取附近的人的方法里面有是否显示好友的情况，因此在这里需要判断下这个用户是否是自己的好友
+			if (from.equals("add")) {
+			// 从附近的人列表添加好友--因为获取附近的人的方法里面有是否显示好友的情况，因此在这里需要判断下这个用户是否是自己的好友
 				if (mApplication.getContactList().containsKey(username)) {// 是好友
 //					btn_chat.setVisibility(View.VISIBLE);
 //					btn_chat.setOnClickListener(this);
@@ -159,16 +160,12 @@ public class SetMyInfoActivity extends ActivityBase implements OnClickListener {
 
 	private void initOtherData(String name) {
 		userManager.queryUser(name, new FindListener<User>() {
-
 			@Override
 			public void onError(int arg0, String arg1) {
-				// TODO Auto-generated method stub
 				ShowLog("onError onError:" + arg1);
 			}
-
 			@Override
 			public void onSuccess(List<User> arg0) {
-				// TODO Auto-generated method stub
 				if (arg0 != null && arg0.size() > 0) {
 					user = arg0.get(0);
 					btn_chat.setEnabled(true);
@@ -187,7 +184,7 @@ public class SetMyInfoActivity extends ActivityBase implements OnClickListener {
 		refreshAvatar(user.getAvatar());
 		tv_set_name.setText(user.getUsername());
 		tv_set_nick.setText(user.getNick());
-		tv_set_gender.setText(user.getSex() == true ? "男" : "女");
+		tv_set_gender.setText(user.getSex() ? "男" : "女");
 		// 检测是否为黑名单用户
 		if (from.equals("other")) {
 			if (BmobDB.create(this).isBlackUser(user.getUsername())) {
@@ -360,7 +357,7 @@ public class SetMyInfoActivity extends ActivityBase implements OnClickListener {
 						btn_back.setVisibility(View.GONE);
 						layout_black_tips.setVisibility(View.VISIBLE);
 						// 重新设置下内存中保存的好友列表
-						CustomApplcation.getInstance().setContactList(CollectionUtils.list2map(BmobDB.create(SetMyInfoActivity.this).getContactList()));
+						CustomApplcation.getInstance().setContactList(CollectionUtils.list2map(BmobDB.create(InfoActivity.this).getContactList()));
 					}
 
 					@Override
@@ -558,7 +555,7 @@ public class SetMyInfoActivity extends ActivityBase implements OnClickListener {
 			@Override
 			public void onSuccess() {
 				// TODO Auto-generated method stub
-				String url = bmobFile.getFileUrl(SetMyInfoActivity.this);
+				String url = bmobFile.getFileUrl(InfoActivity.this);
 				// 更新BmobUser对象
 				updateUserAvatar(url);
 			}

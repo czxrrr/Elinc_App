@@ -4,13 +4,19 @@
     android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context="com.bmob.im.demo.ui.fragment.CardFragment">
-    <com.bmob.im.demo.view.xlist.XListView
-        android:id="@+id/card_list"
-        android:divider="@drawable/base_horizontal_line"
-        android:dividerHeight="1dp"
-        android:fastScrollEnabled="true"
-        android:paddingBottom="10dp"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </com.bmob.im.demo.view.xlist.XListView>
+        <com.bmob.im.demo.view.xlist.XListView
+            android:id="@+id/card_list"
+            android:divider="@drawable/base_horizontal_line"
+            android:dividerHeight="1dp"
+            android:fastScrollEnabled="true"
+            android:paddingBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </com.bmob.im.demo.view.xlist.XListView>
+        <include layout="@layout/include_comment_bottom_bar"/>
+    </RelativeLayout>
+
 </LinearLayout>
