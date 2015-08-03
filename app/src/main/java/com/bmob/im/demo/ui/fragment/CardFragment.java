@@ -72,13 +72,15 @@ public class CardFragment extends FragmentBase implements XListView.IXListViewLi
     private void initList(){
         cardList = new ArrayList<>();
         listView = (XListView)findViewById(R.id.card_list);
-        // 首先不允许加载更多
+        // 允许加载更多
         listView.setPullLoadEnable(true);
-        // 不允许下拉
+        // 允许下拉
         listView.setPullRefreshEnable(true);
         // 设置监听器
         listView.setXListViewListener(this);
+        //设置下拉刷新
         listView.pullRefreshing();
+        //设置divider高度
         listView.setDividerHeight(2);
         myAdapter = new CardListAdapter(getActivity(),cardList);
         listView.setAdapter(myAdapter);
@@ -97,6 +99,10 @@ public class CardFragment extends FragmentBase implements XListView.IXListViewLi
         });
         refreshList();
     }
+
+    /**
+     *  刷新列表，更新前 curPage 页数据
+     */
     private void refreshList(){
         BmobQuery<Card>query = new BmobQuery<>();
         query.order("-updatedAt");
@@ -105,7 +111,7 @@ public class CardFragment extends FragmentBase implements XListView.IXListViewLi
         query.findObjects(getActivity(), new FindListener<Card>() {
             @Override
             public void onSuccess(List<Card> list) {
-                if(list.size()!=cardList.size()) {
+                if(list.size()!=cardList.size() || !list.get(0).getObjectId().equals(cardList.get(0).getObjectId())) {
                     Log.i("listsize:",""+list.size());
                     cardList.clear();
                     cardList.addAll(list);
@@ -128,6 +134,7 @@ public class CardFragment extends FragmentBase implements XListView.IXListViewLi
     public void onRefresh() {
         refreshList();
     }
+    //上拉加载更多
     @Override
     public void onLoadMore() {
         BmobQuery<Card> query = new BmobQuery<>();
@@ -156,6 +163,7 @@ public class CardFragment extends FragmentBase implements XListView.IXListViewLi
             }
         });
     }
+    //加载结束，取消可加载状态
     private void refreshLoad(){
         if (listView.getPullLoading()) {
             listView.stopLoadMore();
