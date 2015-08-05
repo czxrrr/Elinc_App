@@ -6,6 +6,7 @@
     android:id="@+id/input_bar"
     android:background="@drawable/base_comment_emo_bar"
     android:gravity="center_vertical"
+    android:visibility="gone"
     android:orientation="vertical" >
 
     <LinearLayout
