@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +16,7 @@ import android.support.design.widget.*;
 import android.support.v7.internal.view.menu.MenuPopupHelper;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -84,6 +86,7 @@ public class MainActivity extends ActivityBase implements EventListener{
 		 */
 		Toolbar toolbar= (Toolbar) findViewById(R.id.toolbar);
 		toolbar.setTitle("Elinc");
+		toolbar.setBackgroundResource(R.drawable.nav_background_e);
 		setSupportActionBar(toolbar);
 		final android.support.v7.app.ActionBar main_ab = getSupportActionBar();
 		if (main_ab != null) {
@@ -161,7 +164,7 @@ public class MainActivity extends ActivityBase implements EventListener{
 			public void onClick(View v) {
 				Intent intent = new Intent();
 				intent.putExtra("from","me");
-				intent.setClass(MainActivity.this,InfoActivity.class);
+				intent.setClass(MainActivity.this,SetMyInfoActivity.class);
 				startAnimActivity(intent);
 			}
 		});
@@ -211,11 +214,11 @@ public class MainActivity extends ActivityBase implements EventListener{
 			public void onPageSelected(int position) {
 				if (position == 0) {
 					currentTabIndex = 0;
-				}else if (position == 1) {
+				} else if (position == 1) {
 					currentTabIndex = 1;
-				}else if (position == 2) {
+				} else if (position == 2) {
 					currentTabIndex = 2;
-				}else if (position == 3) {
+				} else if (position == 3) {
 					currentTabIndex = 3;
 				}
 			}
@@ -227,7 +230,9 @@ public class MainActivity extends ActivityBase implements EventListener{
 
 		TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 		tabLayout.setupWithViewPager(viewPager);
-		tabLayout.setBackgroundColor(getResources().getColor(R.color.elinc_green));
+		tabLayout.setBackgroundResource(R.drawable.tab_background_e);
+		tabLayout.setTabTextColors(R.color.window_background, R.color.window_background);
+
 
 //		FloatingActionButton fab_toChat = (FloatingActionButton) findViewById(R.id.fab_toChat);
 //		fab_toChat.setOnClickListener(new View.OnClickListener() {

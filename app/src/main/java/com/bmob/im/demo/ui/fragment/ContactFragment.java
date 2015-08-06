@@ -38,14 +38,16 @@ import com.bmob.im.demo.CustomApplcation;
 import com.bmob.im.demo.R;
 import com.bmob.im.demo.adapter.UserFriendAdapter;
 import com.bmob.im.demo.bean.User;
+import com.bmob.im.demo.ui.AddFriendActivity;
 import com.bmob.im.demo.ui.FragmentBase;
-import com.bmob.im.demo.ui.InfoActivity;
 import com.bmob.im.demo.ui.NearPeopleActivity;
 import com.bmob.im.demo.ui.NewFriendActivity;
+import com.bmob.im.demo.ui.SetMyInfoActivity;
 import com.bmob.im.demo.util.CharacterParser;
 import com.bmob.im.demo.util.CollectionUtils;
 import com.bmob.im.demo.util.PinyinComparator;
 import com.bmob.im.demo.view.ClearEditText;
+import com.bmob.im.demo.view.HeaderLayout.onRightImageButtonClickListener;
 import com.bmob.im.demo.view.MyLetterView;
 import com.bmob.im.demo.view.MyLetterView.OnTouchingLetterChangedListener;
 import com.bmob.im.demo.view.dialog.DialogTips;
@@ -349,7 +351,7 @@ public class ContactFragment extends FragmentBase implements OnItemClickListener
 		// TODO Auto-generated method stub
 		User user = (User) userAdapter.getItem(position-1);
 		//先进入好友的详细资料页面
-		Intent intent =new Intent(getActivity(),InfoActivity.class);
+		Intent intent =new Intent(getActivity(),SetMyInfoActivity.class);
 		intent.putExtra("from", "other");
 		intent.putExtra("username", user.getUsername());
 		startAnimActivity(intent);

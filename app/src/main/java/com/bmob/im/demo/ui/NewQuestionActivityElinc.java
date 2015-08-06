@@ -80,10 +80,13 @@ public class NewQuestionActivityElinc extends ActivityBase {
             @Override
             public void onSuccess() {
                 // TODO Auto-generated method stub
+                String id=question.getObjectId();
                 Tool.alert(NewQuestionActivityElinc.this, "提问成功，请静候答案");
                 User user = BmobUser.getCurrentUser(NewQuestionActivityElinc.this, User.class);
                 BmobRelation relation = new BmobRelation();
-                relation.add(question);
+                Question q=new Question();
+                q.setObjectId(id);
+                relation.add(q);
                 user.setFollow(relation);
                 user.update(NewQuestionActivityElinc.this, new UpdateListener() {
                     @Override

@@ -1,64 +1,257 @@
 package com.bmob.im.demo.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.UserManager;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
-import com.bmob.im.demo.R;
-import com.bmob.im.demo.bean.Question;
-import com.bmob.im.demo.bean.Tool;
-import com.bmob.im.demo.bean.User;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import cn.bmob.im.BmobUserManager;
+import cn.bmob.im.bean.BmobChatUser;
+import cn.bmob.im.task.BRequest;
+import cn.bmob.im.util.BmobLog;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobPointer;
 import cn.bmob.v3.datatype.BmobRelation;
+import cn.bmob.v3.listener.CountListener;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.UpdateListener;
 
-public class MyFavoriteActivityElinc extends ActivityBase {
-    private ListView listView;
-    private SimpleAdapter questionAdapter;
-    private List<Map<String,String>> mapList;
-    private List<Question> myFavourite;
+import com.bmob.im.demo.R;
+import com.bmob.im.demo.adapter.QuestionListAdapter;
+import com.bmob.im.demo.bean.Question;
+import com.bmob.im.demo.bean.Tool;
+import com.bmob.im.demo.bean.User;
+import com.bmob.im.demo.ui.FragmentBase;
+import com.bmob.im.demo.ui.QuestionItemActivityElinc;
+import com.bmob.im.demo.util.CollectionUtils;
+import com.bmob.im.demo.view.xlist.XListView;
+import com.bmob.im.demo.view.xlist.XListView.IXListViewListener;
+
+/** 添加好友
+ * @ClassName: SearchQuestion
+ * @Description: TODO
+ * @author smile
+ * @date 2014-6-5 下午5:26:41
+ */
+public class MyFavoriteActivityElinc extends ActivityBase implements OnClickListener,IXListViewListener,OnItemClickListener{
+    EditText et_search_question;
+    Button btn_search_question;
+    List<Question> question = new ArrayList<Question>();
+    XListView mListView;
+    QuestionListAdapter adapter;
+    private View view;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    private void initView(){
+
         setContentView(R.layout.activity_my_favorite_activity_elinc);
-        initTopBarForLeft("问题收藏");
-        listView = (ListView)findViewById(R.id.question_list);
-        initListView();
-        initItemListener();
+        initTopBarForLeft("我的收藏");
+        initXListView();
+        initAdapter();
+
+    }
+
+    private void initXListView() {
+        mListView = (XListView) findViewById(R.id.list_question_e);
+        // 首先不允许加载更多
+        mListView.setPullLoadEnable(false);
+        // 不允许下拉
+        mListView.setPullRefreshEnable(false);
+        // 设置监听器
+        mListView.setXListViewListener(this);
+        //
+        mListView.pullRefreshing();
+
+        adapter = new QuestionListAdapter(this, question);
+        mListView.setAdapter(adapter);
+
+        mListView.setOnItemClickListener(this);
+
+    }
+
+    int curPage = 0;
+    ProgressDialog progress ;
+    private void initSearchList(final boolean isUpdate){
+        if(!isUpdate){
+            progress = new ProgressDialog(this);
+            progress.setMessage("正在搜索...");
+            progress.setCanceledOnTouchOutside(true);
+            progress.show();
+        }
+
+        BmobQuery<Question> query = new BmobQuery<>();
+        User u = BmobUser.getCurrentUser(this, User.class);
+        query.include("follow");
+        query.addWhereEqualTo("ObjectId", u.getObjectId());
+        query.findObjects(this, new FindListener<Question>() {
+            @Override
+            public void onSuccess(List<Question> list) {
+                // TODO Auto-generated method stub
+                if (CollectionUtils.isNotNull(list)) {
+                    if (isUpdate) {
+                        question.clear();
+                    }
+                    adapter.addAll(list);
+                    if (list.size() < BRequest.QUERY_LIMIT_COUNT) {
+                        mListView.setPullLoadEnable(false);
+                        ShowToast("问题搜索完成!");
+                    } else {
+                        mListView.setPullLoadEnable(true);
+                    }
+                } else {
+                    BmobLog.i("查询成功:无返回值");
+                    if (question != null) {
+                        question.clear();
+                    }
+                    ShowToast("没有您要找的问题，去提问吧");
+                }
+                if (!isUpdate) {
+                    progress.dismiss();
+                } else {
+                    refreshPull();
+                }
+                //这样能保证每次查询都是从头开始
+                curPage = 0;
+            }
+            @Override
+            public void onError(int code, String msg) {
+                // TODO Auto-generated method stub
+                BmobLog.i("查询错误:" + msg);
+                if (question != null) {
+                    question.clear();
+                }
+                ShowToast("问题不存在");
+                mListView.setPullLoadEnable(false);
+                refreshPull();
+                //这样能保证每次查询都是从头开始
+                curPage = 0;
+            }
+        });
+
+    }
+
+    /** 查询更多
+     * @Title: queryMoreNearList
+     * @Description: TODO
+     * @param @param page
+     * @return void
+     * @throws
+     */
+    private void queryMoreSearchList(int page){
+        /*BmobQuery<Question> query = new BmobQuery<>();
+        User u = BmobUser.getCurrentUser(this, User.class);
+        u.setObjectId(u.getObjectId());
+        query.include("author");
+        query.addWhereRelatedTo("follow", new BmobPointer(u));*/
+        BmobQuery<Question> query = new BmobQuery<>();
+        User u = BmobUser.getCurrentUser(this, User.class);
+        query.include("follow");
+        query.addWhereEqualTo("ObjectId",u.getObjectId());
+        query.findObjects(this, new FindListener<Question>() {
+            @Override
+            public void onSuccess(List<Question> list) {
+                // TODO Auto-generated method stub
+                if (CollectionUtils.isNotNull(list)) {
+                    adapter.addAll(list);
+                }
+                refreshLoad();
+            }
+
+            @Override
+            public void onError(int i, String s) {
+                // TODO Auto-generated method stub
+                ShowLog("搜索更多问题出错:" + s);
+                mListView.setPullLoadEnable(false);
+                refreshLoad();
+            }
+        });
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_my_favorite_activity_elinc, menu);
-        return true;
+    public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+        Intent intent = new Intent();
+        Bundle bundle = new Bundle();
+        String questionId = question.get(position-1).getObjectId();
+        //ShowToast("point"+position);
+        bundle.putString("questionId", questionId);
+        intent.putExtras(bundle);
+        intent.setClass(this, QuestionItemActivityElinc.class);
+        startAnimActivity(intent);
     }
 
-    private void initListView(){
-        mapList = new ArrayList<>();
+
+    @Override
+    public void onClick(View arg0) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onRefresh() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onLoadMore() {
         BmobQuery<Question> query = new BmobQuery<>();
+        User u = BmobUser.getCurrentUser(this, User.class);
+        query.include("follow");
+        query.addWhereEqualTo("ObjectId", u.getObjectId());
+        query.findObjects(this, new FindListener<Question>() {
+            @Override
+            public void onSuccess(List<Question> list) {
+                // TODO Auto-generated method stub
+                if (CollectionUtils.isNotNull(list)) {
+                    adapter.addAll(list);
+                }
+                refreshLoad();
+            }
+
+            @Override
+            public void onError(int i, String s) {
+                // TODO Auto-generated method stub
+                ShowLog("搜索更多问题出错:" + s);
+                mListView.setPullLoadEnable(false);
+                refreshLoad();
+            }
+        });
+    }
+
+    private void refreshLoad(){
+        if (mListView.getPullLoading()) {
+            mListView.stopLoadMore();
+        }
+    }
+
+    private void refreshPull(){
+        if (mListView.getPullRefreshing()) {
+            mListView.stopRefresh();
+        }
+    }
+
+    public void initAdapter(){
+        BmobQuery<Question> query = new BmobQuery<Question>();
         User u = BmobUser.getCurrentUser(this, User.class);
         u.setObjectId(u.getObjectId());
         query.include("author");
@@ -66,49 +259,66 @@ public class MyFavoriteActivityElinc extends ActivityBase {
         query.findObjects(this, new FindListener<Question>() {
             @Override
             public void onSuccess(List<Question> list) {
-                Log.i("life", "查询个数：" + list.size());
-                myFavourite=list;
-                for (int i = 0; i < list.size(); i++) {
-                    Map<String, String> map = new HashMap<>();
-                    map.put("title", list.get(i).getTitle());
-                    map.put("question_content", list.get(i).getQuestionContent());
-                    map.put("objectId", list.get(i).getObjectId());
-                    map.put("author", list.get(i).getAuthor().getUsername());
-                    mapList.add(map);
+                // TODO Auto-generated method stub
+                if (CollectionUtils.isNotNull(list)) {
+                    question.clear();
+                    adapter.addAll(list);
+                    if (list.size() < BRequest.QUERY_LIMIT_COUNT) {
+                        mListView.setPullLoadEnable(false);
+                        ShowToast("问题搜索完成!");
+                    } else {
+                        mListView.setPullLoadEnable(true);
+                    }
+                } else {
+                    BmobLog.i("查询成功:无返回值");
+                    if (question != null) {
+                        question.clear();
+                    }
+                    ShowToast("没有您要找的问题，去提问吧");
                 }
-                questionAdapter = new SimpleAdapter(MyFavoriteActivityElinc.this, mapList, R.layout.item_question_in_list_elinc,
-                        new String[]{"title", "question_content", "author"},
-                        new int[]{R.id.title, R.id.question_content, R.id.author
-                        });
-                listView.setAdapter(questionAdapter);
-                Tool.setListViewHeightBasedOnChildren(listView);
+                if (!true) {
+                    progress.dismiss();
+                } else {
+                    refreshPull();
+                }
+                //这样能保证每次查询都是从头开始
+                curPage = 0;
             }
 
             @Override
             public void onError(int code, String msg) {
-                Log.i("life", "查询失败：" + code + "-" + msg);
+                // TODO Auto-generated method stub
+                BmobLog.i("查询错误:" + msg);
+                if (question != null) {
+                    question.clear();
+                }
+                ShowToast("问题不存在");
+                mListView.setPullLoadEnable(false);
+                refreshPull();
+                //这样能保证每次查询都是从头开始
+                curPage = 0;
             }
         });
     }
-
     private void initItemListener(){
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(MyFavoriteActivityElinc.this, "" + position, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 Bundle bundle = new Bundle();
-                String questionId = mapList.get(position).get("objectId");
+                String questionId = question.get(position-1).getObjectId();
                 bundle.putString("questionId", questionId);
                 intent.putExtras(bundle);
                 intent.setClass(MyFavoriteActivityElinc.this, QuestionItemActivityElinc.class);
                 startAnimActivity(intent);
             }
         });
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                dialog(myFavourite.get(position));
+                ShowToast(""+position);
+                dialog(question.get(position-1));
                 return false;
             }
         });
@@ -131,29 +341,31 @@ public class MyFavoriteActivityElinc extends ActivityBase {
                 BmobRelation relation = new BmobRelation();
                 relation.remove(question);
                 user.setFollow(relation);
-                user.update(MyFavoriteActivityElinc.this, new UpdateListener() {
+                user.update(MyFavoriteActivityElinc.this, user.getObjectId(), new UpdateListener() {
                     @Override
                     public void onSuccess() {
                         // TODO Auto-generated method stub
                         Log.i("life", "关联关系删除成功");
-                        Tool.alert(MyFavoriteActivityElinc.this,"取消关注成功");
+                        Tool.alert(MyFavoriteActivityElinc.this, "取消关注成功");
                     }
 
                     @Override
                     public void onFailure(int arg0, String arg1) {
                         // TODO Auto-generated method stub
                         Log.i("life", "关联关系删除失败：" + arg0 + "-" + arg1);
-                        Tool.alert(MyFavoriteActivityElinc.this, "取消关注失败，请检查网络");
+                        //Tool.alert(MyFavoriteActivityElinc.this, "取消关注失败，请检查网络");
+                        ShowToast("" + arg1);
                     }
                 });
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-           @Override
-           public void onClick(DialogInterface dialog, int which) {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-           }
+            }
         });
         builder.create().show();
     }
+
 }

@@ -75,7 +75,7 @@ import com.bmob.im.demo.view.xlist.XListView.IXListViewListener;
 
 /**
  * 聊天界面
- *
+ * 
  * @ClassName: ChatActivity
  * @Description: TODO
  * @author smile
@@ -98,7 +98,7 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 	EmoticonsEditText edit_user_comment;
 
 	String targetId = "";
-
+	
 	BmobChatUser targetUser;
 
 	private static int MsgPagerNum;
@@ -134,19 +134,19 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 		initNewMessageBroadCast();
 		initView();
 	}
-
+	
 	private void initRecordManager(){
 		// 语音相关管理器
 		recordManager = BmobRecordManager.getInstance(this);
 		// 设置音量大小监听--在这里开发者可以自己实现：当剩余10秒情况下的给用户的提示，类似微信的语音那样
 		recordManager.setOnRecordChangeListener(new OnRecordChangeListener() {
-
+	
 			@Override
 			public void onVolumnChanged(int value) {
 				// TODO Auto-generated method stub
 				iv_record.setImageDrawable(drawable_Anims[value]);
 			}
-
+	
 			@Override
 			public void onTimeChanged(int recordTime, String localPath) {
 				// TODO Auto-generated method stub
@@ -161,7 +161,7 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 					sendVoiceMessage(localPath, recordTime);
 					//是为了防止过了录音时间后，会多发一条语音出去的情况。
 					handler.postDelayed(new Runnable() {
-
+	
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
@@ -169,7 +169,7 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 						}
 					}, 1000);
 				}else{
-
+					
 				}
 			}
 		});
@@ -186,7 +186,7 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 
 	/**
 	 * 初始化语音布局
-	 *
+	 * 
 	 * @Title: initVoiceView
 	 * @Description: TODO
 	 * @param
@@ -213,57 +213,57 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			switch (event.getAction()) {
-				case MotionEvent.ACTION_DOWN:
-					if (!CommonUtils.checkSdCard()) {
-						ShowToast("发送语音需要sdcard支持！");
-						return false;
-					}
-					try {
-						v.setPressed(true);
-						layout_record.setVisibility(View.VISIBLE);
-						tv_voice_tips.setText(getString(R.string.voice_cancel_tips));
-						// 开始录音
-						recordManager.startRecording(targetId);
-					} catch (Exception e) {
-					}
-					return true;
-				case MotionEvent.ACTION_MOVE: {
-					if (event.getY() < 0) {
-						tv_voice_tips
-								.setText(getString(R.string.voice_cancel_tips));
-						tv_voice_tips.setTextColor(Color.RED);
-					} else {
-						tv_voice_tips.setText(getString(R.string.voice_up_tips));
-						tv_voice_tips.setTextColor(Color.WHITE);
-					}
-					return true;
-				}
-				case MotionEvent.ACTION_UP:
-					v.setPressed(false);
-					layout_record.setVisibility(View.INVISIBLE);
-					try {
-						if (event.getY() < 0) {// 放弃录音
-							recordManager.cancelRecording();
-							BmobLog.i("voice", "放弃发送语音");
-						} else {
-							int recordTime = recordManager.stopRecording();
-							if (recordTime > 1) {
-								// 发送语音文件
-								BmobLog.i("voice", "发送语音");
-								sendVoiceMessage(
-										recordManager.getRecordFilePath(targetId),
-										recordTime);
-							} else {// 录音时间过短，则提示录音过短的提示
-								layout_record.setVisibility(View.GONE);
-								showShortToast().show();
-							}
-						}
-					} catch (Exception e) {
-						// TODO: handle exception
-					}
-					return true;
-				default:
+			case MotionEvent.ACTION_DOWN:
+				if (!CommonUtils.checkSdCard()) {
+					ShowToast("发送语音需要sdcard支持！");
 					return false;
+				}
+				try {
+					v.setPressed(true);
+					layout_record.setVisibility(View.VISIBLE);
+					tv_voice_tips.setText(getString(R.string.voice_cancel_tips));
+					// 开始录音
+					recordManager.startRecording(targetId);
+				} catch (Exception e) {
+				}
+				return true;
+			case MotionEvent.ACTION_MOVE: {
+				if (event.getY() < 0) {
+					tv_voice_tips
+							.setText(getString(R.string.voice_cancel_tips));
+					tv_voice_tips.setTextColor(Color.RED);
+				} else {
+					tv_voice_tips.setText(getString(R.string.voice_up_tips));
+					tv_voice_tips.setTextColor(Color.WHITE);
+				}
+				return true;
+			}
+			case MotionEvent.ACTION_UP:
+				v.setPressed(false);
+				layout_record.setVisibility(View.INVISIBLE);
+				try {
+					if (event.getY() < 0) {// 放弃录音
+						recordManager.cancelRecording();
+						BmobLog.i("voice", "放弃发送语音");
+					} else {
+						int recordTime = recordManager.stopRecording();
+						if (recordTime > 1) {
+							// 发送语音文件
+							BmobLog.i("voice", "发送语音");
+							sendVoiceMessage(
+									recordManager.getRecordFilePath(targetId),
+									recordTime);
+						} else {// 录音时间过短，则提示录音过短的提示
+							layout_record.setVisibility(View.GONE);
+							showShortToast().show();
+						}
+					}
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				return true;
+			default:
+				return false;
 			}
 		}
 	}
@@ -411,7 +411,7 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
-									  int count) {
+					int count) {
 				// TODO Auto-generated method stub
 				if (!TextUtils.isEmpty(s)) {
 					btn_chat_send.setVisibility(View.VISIBLE);
@@ -428,7 +428,7 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
-										  int after) {
+					int after) {
 				// TODO Auto-generated method stub
 
 			}
@@ -478,7 +478,7 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
-									int position, long arg3) {
+					int position, long arg3) {
 				FaceText name = (FaceText) gridAdapter.getItem(position);
 				String key = name.text.toString();
 				try {
@@ -505,7 +505,7 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 	}
 
 	MessageChatAdapter mAdapter;
-
+	
 	private void initXListView() {
 		// 首先不允许加载更多
 		mListView.setPullLoadEnable(false);
@@ -539,7 +539,7 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 
 					@Override
 					public void OnClickListener(View parentV, View v,
-												Integer position, Object values) {
+							Integer position, Object values) {
 						// 重发消息
 						showResendDialog(parentV, v, values);
 					}
@@ -675,91 +675,91 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
-			case R.id.edit_user_comment:// 点击文本输入框
-				mListView.setSelection(mListView.getCount() - 1);
-				if (layout_more.getVisibility() == View.VISIBLE) {
+		case R.id.edit_user_comment:// 点击文本输入框
+			mListView.setSelection(mListView.getCount() - 1);
+			if (layout_more.getVisibility() == View.VISIBLE) {
+				layout_add.setVisibility(View.GONE);
+				layout_emo.setVisibility(View.GONE);
+				layout_more.setVisibility(View.GONE);
+			}
+			break;
+		case R.id.btn_chat_emo:// 点击笑脸图标
+			if (layout_more.getVisibility() == View.GONE) {
+				showEditState(true);
+			} else {
+				if (layout_add.getVisibility() == View.VISIBLE) {
 					layout_add.setVisibility(View.GONE);
-					layout_emo.setVisibility(View.GONE);
+					layout_emo.setVisibility(View.VISIBLE);
+				} else {
 					layout_more.setVisibility(View.GONE);
 				}
-				break;
-			case R.id.btn_chat_emo:// 点击笑脸图标
-				if (layout_more.getVisibility() == View.GONE) {
-					showEditState(true);
-				} else {
-					if (layout_add.getVisibility() == View.VISIBLE) {
-						layout_add.setVisibility(View.GONE);
-						layout_emo.setVisibility(View.VISIBLE);
-					} else {
-						layout_more.setVisibility(View.GONE);
-					}
-				}
+			}
 
-				break;
-			case R.id.btn_chat_add:// 添加按钮-显示图片、拍照、位置
-				if (layout_more.getVisibility() == View.GONE) {
-					layout_more.setVisibility(View.VISIBLE);
-					layout_add.setVisibility(View.VISIBLE);
-					layout_emo.setVisibility(View.GONE);
-					hideSoftInputView();
-				} else {
-					if (layout_emo.getVisibility() == View.VISIBLE) {
-						layout_emo.setVisibility(View.GONE);
-						layout_add.setVisibility(View.VISIBLE);
-					} else {
-						layout_more.setVisibility(View.GONE);
-					}
-				}
-
-				break;
-			case R.id.btn_chat_voice:// 语音按钮
-				edit_user_comment.setVisibility(View.GONE);
-				layout_more.setVisibility(View.GONE);
-				btn_chat_voice.setVisibility(View.GONE);
-				btn_chat_keyboard.setVisibility(View.VISIBLE);
-				btn_speak.setVisibility(View.VISIBLE);
+			break;
+		case R.id.btn_chat_add:// 添加按钮-显示图片、拍照、位置
+			if (layout_more.getVisibility() == View.GONE) {
+				layout_more.setVisibility(View.VISIBLE);
+				layout_add.setVisibility(View.VISIBLE);
+				layout_emo.setVisibility(View.GONE);
 				hideSoftInputView();
-				break;
-			case R.id.btn_chat_keyboard:// 键盘按钮，点击就弹出键盘并隐藏掉声音按钮
-				showEditState(false);
-				break;
-			case R.id.btn_chat_send:// 发送文本
-				final String msg = edit_user_comment.getText().toString();
-				if (msg.equals("")) {
-					ShowToast("请输入发送消息!");
-					return;
+			} else {
+				if (layout_emo.getVisibility() == View.VISIBLE) {
+					layout_emo.setVisibility(View.GONE);
+					layout_add.setVisibility(View.VISIBLE);
+				} else {
+					layout_more.setVisibility(View.GONE);
 				}
-				boolean isNetConnected = CommonUtils.isNetworkAvailable(this);
-				if (!isNetConnected) {
-					ShowToast(R.string.network_tips);
-					// return;
-				}
-				// 组装BmobMessage对象
-				BmobMsg message = BmobMsg.createTextSendMsg(this, targetId, msg);
-				message.setExtra("Bmob");
-				// 默认发送完成，将数据保存到本地消息表和最近会话表中
-				manager.sendTextMessage(targetUser, message);
-				// 刷新界面
-				refreshMessage(message);
+			}
 
-				break;
-			case R.id.tv_camera:// 拍照
-				selectImageFromCamera();
-				break;
-			case R.id.tv_picture:// 图片
-				selectImageFromLocal();
-				break;
-			case R.id.tv_location:// 位置
-				selectLocationFromMap();
-				break;
-			default:
-				break;
+			break;
+		case R.id.btn_chat_voice:// 语音按钮
+			edit_user_comment.setVisibility(View.GONE);
+			layout_more.setVisibility(View.GONE);
+			btn_chat_voice.setVisibility(View.GONE);
+			btn_chat_keyboard.setVisibility(View.VISIBLE);
+			btn_speak.setVisibility(View.VISIBLE);
+			hideSoftInputView();
+			break;
+		case R.id.btn_chat_keyboard:// 键盘按钮，点击就弹出键盘并隐藏掉声音按钮
+			showEditState(false);
+			break;
+		case R.id.btn_chat_send:// 发送文本
+			final String msg = edit_user_comment.getText().toString();
+			if (msg.equals("")) {
+				ShowToast("请输入发送消息!");
+				return;
+			}
+			boolean isNetConnected = CommonUtils.isNetworkAvailable(this);
+			if (!isNetConnected) {
+				ShowToast(R.string.network_tips);
+				// return;
+			}
+			// 组装BmobMessage对象
+			BmobMsg message = BmobMsg.createTextSendMsg(this, targetId, msg);
+			message.setExtra("Bmob");
+			// 默认发送完成，将数据保存到本地消息表和最近会话表中
+			manager.sendTextMessage(targetUser, message);
+			// 刷新界面
+			refreshMessage(message);
+
+			break;
+		case R.id.tv_camera:// 拍照
+			selectImageFromCamera();
+			break;
+		case R.id.tv_picture:// 图片
+			selectImageFromLocal();
+			break;
+		case R.id.tv_location:// 位置
+			selectLocationFromMap();
+			break;
+		default:
+			break;
 		}
 	}
 
 	/**
 	 * 启动地图
-	 *
+	 * 
 	 * @Title: selectLocationFromMap
 	 * @Description: TODO
 	 * @param
@@ -776,7 +776,7 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 
 	/**
 	 * 启动相机拍照 startCamera
-	 *
+	 * 
 	 * @Title: startCamera
 	 * @throws
 	 */
@@ -820,40 +820,40 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 		super.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == RESULT_OK) {
 			switch (requestCode) {
-				case BmobConstants.REQUESTCODE_TAKE_CAMERA:// 当取到值的时候才上传path路径下的图片到服务器
-					ShowLog("本地图片的地址：" + localCameraPath);
-					sendImageMessage(localCameraPath);
-					break;
-				case BmobConstants.REQUESTCODE_TAKE_LOCAL:
-					if (data != null) {
-						Uri selectedImage = data.getData();
-						if (selectedImage != null) {
-							Cursor cursor = getContentResolver().query(
-									selectedImage, null, null, null, null);
-							cursor.moveToFirst();
-							int columnIndex = cursor.getColumnIndex("_data");
-							String localSelectPath = cursor.getString(columnIndex);
-							cursor.close();
-							if (localSelectPath == null
-									|| localSelectPath.equals("null")) {
-								ShowToast("找不到您想要的图片");
-								return;
-							}
-							sendImageMessage(localSelectPath);
+			case BmobConstants.REQUESTCODE_TAKE_CAMERA:// 当取到值的时候才上传path路径下的图片到服务器
+				ShowLog("本地图片的地址：" + localCameraPath);
+				sendImageMessage(localCameraPath);
+				break;
+			case BmobConstants.REQUESTCODE_TAKE_LOCAL:
+				if (data != null) {
+					Uri selectedImage = data.getData();
+					if (selectedImage != null) {
+						Cursor cursor = getContentResolver().query(
+								selectedImage, null, null, null, null);
+						cursor.moveToFirst();
+						int columnIndex = cursor.getColumnIndex("_data");
+						String localSelectPath = cursor.getString(columnIndex);
+						cursor.close();
+						if (localSelectPath == null
+								|| localSelectPath.equals("null")) {
+							ShowToast("找不到您想要的图片");
+							return;
 						}
+						sendImageMessage(localSelectPath);
 					}
-					break;
-				case BmobConstants.REQUESTCODE_TAKE_LOCATION:// 地理位置
-					double latitude = data.getDoubleExtra("x", 0);// 维度
-					double longtitude = data.getDoubleExtra("y", 0);// 经度
-					String address = data.getStringExtra("address");
-					if (address != null && !address.equals("")) {
-						sendLocationMessage(address, latitude, longtitude);
-					} else {
-						ShowToast("无法获取到您的位置信息!");
-					}
+				}
+				break;
+			case BmobConstants.REQUESTCODE_TAKE_LOCATION:// 地理位置
+				double latitude = data.getDoubleExtra("x", 0);// 维度
+				double longtitude = data.getDoubleExtra("y", 0);// 经度
+				String address = data.getStringExtra("address");
+				if (address != null && !address.equals("")) {
+					sendLocationMessage(address, latitude, longtitude);
+				} else {
+					ShowToast("无法获取到您的位置信息!");
+				}
 
-					break;
+				break;
 			}
 		}
 	}
@@ -869,7 +869,7 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 	 * @throws
 	 */
 	private void sendLocationMessage(String address, double latitude,
-									 double longtitude) {
+			double longtitude) {
 		if (layout_more.getVisibility() == View.VISIBLE) {
 			layout_more.setVisibility(View.GONE);
 			layout_add.setVisibility(View.GONE);
@@ -1009,9 +1009,9 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 	};
 
 	public static final int NEW_MESSAGE = 0x001;// 收到消息
-
+	
 	NewBroadcastReceiver  receiver;
-
+	
 	private void initNewMessageBroadCast(){
 		// 注册接收消息广播
 		receiver = new NewBroadcastReceiver();
@@ -1020,10 +1020,10 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 		intentFilter.setPriority(5);
 		registerReceiver(receiver, intentFilter);
 	}
-
+	
 	/**
 	 * 新消息广播接收者
-	 *
+	 * 
 	 */
 	private class NewBroadcastReceiver extends BroadcastReceiver {
 		@Override
@@ -1047,7 +1047,7 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 			abortBroadcast();
 		}
 	}
-
+	
 	/**
 	 * 刷新界面
 	 * @Title: refreshMessage
@@ -1063,7 +1063,7 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 		edit_user_comment.setText("");
 	}
 
-
+	
 	@Override
 	public void onMessage(BmobMsg message) {
 		// TODO Auto-generated method stub
@@ -1160,7 +1160,7 @@ public class ChatActivity extends ActivityBase implements OnClickListener,
 			unregisterReceiver(receiver);
 		} catch (Exception e) {
 		}
-
+		
 	}
 
 }

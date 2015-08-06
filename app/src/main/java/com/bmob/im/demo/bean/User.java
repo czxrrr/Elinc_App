@@ -44,7 +44,17 @@ public class User extends BmobChatUser {
 	private String university;
 	private String campus;
 	private String signature;
+
+	public String getInviter() {
+		return inviter;
+	}
+
+	public void setInviter(String inviter) {
+		this.inviter = inviter;
+	}
+
 	private String grade;
+	private String inviter;
 	private BmobRelation follow;
 	private Integer zan;
 	public static long getSerialVersionUID() {

@@ -25,8 +25,8 @@ import com.bmob.im.demo.R;
 import com.bmob.im.demo.adapter.base.BaseListAdapter;
 import com.bmob.im.demo.adapter.base.ViewHolder;
 import com.bmob.im.demo.ui.ImageBrowserActivity;
-import com.bmob.im.demo.ui.InfoActivity;
 import com.bmob.im.demo.ui.LocationActivity;
+import com.bmob.im.demo.ui.SetMyInfoActivity;
 import com.bmob.im.demo.util.FaceTextUtils;
 import com.bmob.im.demo.util.ImageLoadOptions;
 import com.bmob.im.demo.util.TimeUtil;
@@ -165,7 +165,7 @@ public class MessageChatAdapter extends BaseListAdapter<BmobMsg> {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				Intent intent =new Intent(mContext,InfoActivity.class);
+				Intent intent =new Intent(mContext,SetMyInfoActivity.class);
 				if(getItemViewType(position) == TYPE_RECEIVER_TXT 
 						||getItemViewType(position) == TYPE_RECEIVER_IMAGE
 				        ||getItemViewType(position)==TYPE_RECEIVER_LOCATION

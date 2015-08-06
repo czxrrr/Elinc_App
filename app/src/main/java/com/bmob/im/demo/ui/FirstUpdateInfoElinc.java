@@ -26,11 +26,13 @@ public class FirstUpdateInfoElinc extends BaseActivity {
     private Boolean chosenSex;
     private Button confirm;
     private String mobilePhone;
+    private String inviter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_update_info_elinc);
         mobilePhone = getIntent().getExtras().getString("mobile_phone");//电话号码
+        inviter = getIntent().getExtras().getString("inviter");//电话号码
         Log.i("1",mobilePhone+"");
         et_password = (EditText)findViewById(R.id.et_password);
         et_password_again = (EditText)findViewById(R.id.et_password_again);
@@ -85,6 +87,7 @@ public class FirstUpdateInfoElinc extends BaseActivity {
                 u.setSex(chosenSex);
                 u.setCampus(et_campus.getText().toString());
                 u.setUniversity(et_uni.getText().toString());
+                u.setInviter(inviter);
                 u.setDeviceType("android");
                 u.setInstallId(BmobInstallation.getInstallationId(FirstUpdateInfoElinc.this));
                 u.signUp(FirstUpdateInfoElinc.this, new SaveListener() {

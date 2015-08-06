@@ -25,7 +25,7 @@ import com.bmob.im.demo.bean.User;
  * @date 2014-6-7 下午4:03:40
  */
 public class UpdateInfoActivityElinc extends ActivityBase {
-	private EditText et_nick,et_uni,et_campus;
+	private EditText et_uni,et_campus;
 	private RadioGroup sex;
 	private RadioButton sex_woman,sex_man;
 	private Boolean chosenSex;
@@ -41,7 +41,7 @@ public class UpdateInfoActivityElinc extends ActivityBase {
 	}
 	private void initView(){
 		et_campus= (EditText) findViewById(R.id.et_campus);
-		et_nick= (EditText) findViewById(R.id.et_nick);
+
 		et_uni= (EditText) findViewById(R.id.et_university);
 		sex= (RadioGroup) findViewById(R.id.sex);
 		sex_woman= (RadioButton) findViewById(R.id.sex_woman);
@@ -52,7 +52,6 @@ public class UpdateInfoActivityElinc extends ActivityBase {
 		final User user = userManager.getCurrentUser(User.class);
 		Log.i("1", user.getCampus());
 		et_campus.setText(user.getCampus(),bufferType);
-		et_nick.setText(user.getNick(),bufferType);
 		et_uni.setText(user.getUniversity(),bufferType);
 		if(user.getSex()){
 			sex_man.setChecked(true);
@@ -77,7 +76,6 @@ public class UpdateInfoActivityElinc extends ActivityBase {
 			public void onClick(View view) {
 				final User user = userManager.getCurrentUser(User.class);
 				User u = new User();
-				u.setNick(et_nick.getText().toString());
 				u.setSex(chosenSex);
 				u.setCampus(et_campus.getText().toString());
 				u.setUniversity(et_uni.getText().toString());

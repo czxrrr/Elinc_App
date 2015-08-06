@@ -58,7 +58,25 @@ public class RegisterActivityElinc extends BaseActivity {
 			@Override
 			public void onClick(View view) {
 				Log.i("phone", et_username.getText().toString());
-				sendVerifyCodeToPhone(et_username.getText().toString());
+				BmobQuery<User> query = new BmobQuery<User>();
+				query.addWhereEqualTo("mobilePhoneNumber", et_username.getText().toString());
+				query.count(RegisterActivityElinc.this, User.class, new CountListener() {
+					@Override
+					public void onSuccess(int count) {
+						if (count > 0) {
+							ShowToast("该手机号已经被别人注册了哦！");
+						} else {
+							sendVerifyCodeToPhone(et_username.getText().toString());
+						}
+
+					}
+
+					@Override
+					public void onFailure(int code, String msg) {
+						ShowToast("sorry,没有网络");
+					}
+				});
+
 			}
 		});
 		//checkUser();
@@ -138,7 +156,9 @@ public class RegisterActivityElinc extends BaseActivity {
 			@Override
 			public void done(BmobException ex) {
 				if (ex == null) {//短信验证码已验证成功
-					register(phoneNumber);
+					EditText et_inviter=(EditText)findViewById(R.id.et_inviter);
+					String inviter=et_inviter.getText().toString();
+					register(phoneNumber,inviter);
 				} else {
 					//Tool.alert(RegisterActivityElinc.this, "fail:code =" + ex.getErrorCode() + ",msg=" + ex.getLocalizedMessage());
 					ShowToast("验证码错误");
@@ -147,7 +167,7 @@ public class RegisterActivityElinc extends BaseActivity {
 		});
 	}
 
-	private void register(String phone){
+	private void register(String phone,String inviter){
 		if(phone==null||phone.equals("")){
 			return;
 		}
@@ -163,7 +183,8 @@ public class RegisterActivityElinc extends BaseActivity {
 		//由于每个应用的注册所需的资料都不一样，故IM sdk未提供注册方法，用户可按照bmod SDK的注册方式进行注册。
 		//注册的时候需要注意两点：1、User表中绑定设备id和type，2、设备表中绑定username字段
 		progress.dismiss();
-		bundle.putString("mobile_phone",phone);
+		bundle.putString("mobile_phone", phone);
+		bundle.putString("inviter",inviter);
 		Intent intent = new Intent(RegisterActivityElinc.this, FirstUpdateInfoElinc.class);
 		intent.putExtras(bundle);
 		startActivity(intent);

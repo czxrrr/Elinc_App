@@ -59,7 +59,7 @@ public class SettingActivity extends ActivityBase implements View.OnClickListene
         view1 = (View) findViewById(R.id.view1);
         view2 = (View) findViewById(R.id.view2);
 
-        tv_set_name = (TextView) findViewById(R.id.tv_set_name);
+        //tv_set_name = (TextView) findViewById(R.id.tv_set_name);
         btn_logout = (Button) findViewById(R.id.btn_logout);
 
         // 初始化
@@ -113,7 +113,7 @@ public class SettingActivity extends ActivityBase implements View.OnClickListene
                 startAnimActivity(new Intent(this,BlackListActivity.class));
                 break;
 //            case R.id.layout_info:// 启动到个人资料页面
-//                Intent intent =new Intent(this,InfoActivity.class);
+//                Intent intent =new Intent(this,SetMyInfoActivity.class);
 //                intent.putExtra("from", "me");
 //                startActivity(intent);
 //                break;
