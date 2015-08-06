@@ -41,16 +41,16 @@ public class CardItemActivityElinc extends ActivityBase{
                     cardReply.save(CardItemActivityElinc.this, new SaveListener() {
                         @Override
                         public void onSuccess() {
-                            ShowToast("»Ø¸´³É¹¦");
+                            ShowToast("æˆåŠŸ");
                         }
 
                         @Override
                         public void onFailure(int i, String s) {
-                            ShowToast("Ç×£¬ÔõÃ´Ã»ÍøÁËÄØ£¿");
+                            ShowToast("å¤±è´¥");
                         }
                     });
                 }else{
-                    ShowToast("¼ÓÔØÖĞ¡£¡£ÇëÉÔºò");
+                    ShowToast("ä¸‰ä¸‰å››å››");
                 }
             }
         });
@@ -67,7 +67,7 @@ public class CardItemActivityElinc extends ActivityBase{
 
             @Override
             public void onFailure(int code, String msg) {
-                ShowToast("Çë¼ì²éÍøÂç");
+                ShowToast("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
             }
         });
     }

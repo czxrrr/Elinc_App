@@ -6,16 +6,28 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
         <TextView
             android:id="@+id/question_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/loading"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:typeface="sans"
+            android:paddingLeft="20pt"
+            android:paddingRight="20pt"
+            android:paddingTop="10pt"
+            android:paddingBottom="5pt"
             />
         <TextView
+
+            android:paddingLeft="20pt"
+            android:paddingRight="20pt"
+            android:paddingTop="5pt"
+            android:paddingBottom="5pt"
             android:id="@+id/question_content"
+            android:textSize="12sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:typeface="sans"/>
@@ -24,41 +36,64 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="30pt"
+                android:layout_marginTop="5pt"
+                android:layout_marginBottom="10pt"
                 >
-                <ImageView
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
                     android:layout_weight="1"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/imageView"
-                    android:src="@drawable/icon_author_e"/>
+                    >
+                <com.bmob.im.demo.view.CircleImageView
+                    android:layout_width="80pt"
+                    android:layout_height="30pt"
+                    android:paddingLeft="40pt"
+                    android:id="@+id/avatar_for_question"
+                    />
 
                 <TextView
-                    android:layout_weight="1"
+
                     android:id="@+id/question_author"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:typeface="sans"
-                    android:textStyle="bold"/>
-                <ImageView
+                    />
+                    </LinearLayout>
+                <LinearLayout
                     android:layout_weight="1"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    >
+                <ImageView
+                    android:layout_width="60pt"
+                    android:layout_height="30pt"
                     android:id="@+id/imageView2"
                     android:src="@drawable/icon_heat_e"/>
 
                 <TextView
-                    android:layout_weight="1"
-                android:id="@+id/question_number_of_answer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:typeface="sans" />
 
+                android:id="@+id/question_number_of_answer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="加载中。。。"
+                android:typeface="sans" />
+                </LinearLayout>
 
             </LinearLayout>
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="1pt"
+            android:layout_gravity="center_horizontal"
+            android:background="#DDDFDD">
+
+        </LinearLayout>
+
     </LinearLayout>
-    <!--<LinearLayout-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"></LinearLayout>-->
+
+
 </LinearLayout>

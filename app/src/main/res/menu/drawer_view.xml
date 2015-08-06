@@ -19,19 +19,19 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_my_goal"
-            android:icon="@drawable/ic_headset"
+            android:icon="@drawable/ic_my_goal"
             android:title="我的目标" />
         <item
             android:id="@+id/nav_recommend"
-            android:icon="@drawable/ic_dashboard"
+            android:icon="@drawable/ic_friend_recommand"
             android:title="学伴推荐" />
         <item
             android:id="@+id/nav_messages"
-            android:icon="@drawable/ic_event"
+            android:icon="@drawable/ic_my_favourite"
             android:title="收藏问题" />
         <item
             android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_dashboard"
+            android:icon="@drawable/ic_setting"
             android:title="系统设置" />
     </group>
 
@@ -39,11 +39,11 @@
         <menu>
             <item
                 android:id="@+id/nav_bug_report"
-                android:icon="@drawable/ic_headset"
+                android:icon="@drawable/ic_bug_report"
                 android:title="BUG反馈" />
             <item
                 android:id="@+id/nav_about_us"
-                android:icon="@drawable/ic_forum"
+                android:icon="@drawable/ic_about_us"
                 android:title="关于我们" />
         </menu>
     </item>

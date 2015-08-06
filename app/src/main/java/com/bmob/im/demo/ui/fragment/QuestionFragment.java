@@ -48,6 +48,7 @@ public class QuestionFragment extends FragmentBase implements OnClickListener,IX
     QuestionListAdapter adapter;
     private View view;
     String searchName ="";
+    final int pageCapacity=2;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_question, container, false);
@@ -67,20 +68,21 @@ public class QuestionFragment extends FragmentBase implements OnClickListener,IX
         btn_search_question.setOnClickListener(this);
         initXListView();
         initAdapter();
+        refreshList();
 
     }
 
     private void initXListView() {
         mListView = (XListView) findViewById(R.id.list_question_e);
         // 首先不允许加载更多
-        mListView.setPullLoadEnable(false);
+        mListView.setPullLoadEnable(true);
         // 不允许下拉
-        mListView.setPullRefreshEnable(false);
+        mListView.setPullRefreshEnable(true);
         // 设置监听器
         mListView.setXListViewListener(this);
         //
         mListView.pullRefreshing();
-
+        mListView.setDividerHeight(2);
         adapter = new QuestionListAdapter(getActivity(), question);
         mListView.setAdapter(adapter);
 
@@ -183,6 +185,7 @@ public class QuestionFragment extends FragmentBase implements OnClickListener,IX
             public void onSuccess(List<Question> list) {
                 // TODO Auto-generated method stub
                 if (CollectionUtils.isNotNull(list)) {
+                    question.clear();
                     adapter.addAll(list);
                 }
                 refreshLoad();
@@ -191,7 +194,7 @@ public class QuestionFragment extends FragmentBase implements OnClickListener,IX
             @Override
             public void onError(int i, String s) {
                 // TODO Auto-generated method stub
-                ShowLog("搜索更多问题出错:"+s);
+                ShowLog("搜索更多问题出错:" + s);
                 mListView.setPullLoadEnable(false);
                 refreshLoad();
             }
@@ -233,7 +236,7 @@ public class QuestionFragment extends FragmentBase implements OnClickListener,IX
 
     @Override
     public void onRefresh() {
-
+        refreshList();
     }
 
     @Override
@@ -256,6 +259,7 @@ public class QuestionFragment extends FragmentBase implements OnClickListener,IX
             public void onSuccess(List<Question> list) {
                 // TODO Auto-generated method stub
                 if (CollectionUtils.isNotNull(list)) {
+                    question.clear();
                     adapter.addAll(list);
                 }
                 refreshLoad();
@@ -326,6 +330,42 @@ public class QuestionFragment extends FragmentBase implements OnClickListener,IX
                 refreshPull();
                 //这样能保证每次查询都是从头开始
                 curPage = 0;
+            }
+        });
+    }
+    private void refreshList(){
+        BmobQuery<Question> eq1 = new BmobQuery<Question>();
+        eq1.addWhereContains("title", et_search_question.getText().toString());
+        BmobQuery<Question> eq2 = new BmobQuery<Question>();
+        eq2.addWhereContains("question_content", et_search_question.getText().toString());
+        BmobQuery<Question> eq3=new BmobQuery<Question>();
+        eq3.addWhereContains("tags", et_search_question.getText().toString());
+        List<BmobQuery<Question>> queries = new ArrayList<BmobQuery<Question>>();
+        queries.add(eq1);
+        queries.add(eq2);
+        queries.add(eq3);
+        BmobQuery<Question> mainQuery = new BmobQuery<Question>();
+        mainQuery.include("author");
+        mainQuery.or(queries);
+        mainQuery.findObjects(getActivity(), new FindListener<Question>() {
+            @Override
+            public void onSuccess(List<Question> list) {
+                // TODO Auto-generated method stub
+                if (CollectionUtils.isNotNull(list)) {
+                    question.clear();
+                    adapter.addAll(list);
+                    mListView.stopRefresh();
+                }
+                refreshLoad();
+            }
+
+            @Override
+            public void onError(int i, String s) {
+                // TODO Auto-generated method stub
+                ShowLog("搜索更多问题出错:"+s);
+                mListView.setPullLoadEnable(false);
+                refreshLoad();
+                mListView.stopRefresh();
             }
         });
     }

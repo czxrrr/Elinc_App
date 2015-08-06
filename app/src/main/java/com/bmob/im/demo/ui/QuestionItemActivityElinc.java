@@ -58,9 +58,9 @@ public class QuestionItemActivityElinc extends ActivityBase  implements View.OnC
     private void initXListView() {
         mListView = (XListView) findViewById(R.id.list_answer_e);
         // 首先不允许加载更多
-        mListView.setPullLoadEnable(false);
+        mListView.setPullLoadEnable(true);
         // 不允许下拉
-        mListView.setPullRefreshEnable(false);
+        mListView.setPullRefreshEnable(true);
         // 设置监听器
         mListView.setXListViewListener(this);
         //
@@ -99,6 +99,7 @@ public class QuestionItemActivityElinc extends ActivityBase  implements View.OnC
         initBasicView();
         initQuestionContent();
         initList();
+        refreshList();
     }
     private void initQuestionContent(){
         String id=bundle.getString("questionId");
@@ -128,7 +129,7 @@ public class QuestionItemActivityElinc extends ActivityBase  implements View.OnC
         initXListView();
         BmobQuery<Answer> bmobQuery = new BmobQuery<Answer>();
         bmobQuery.addWhereEqualTo("questionId", bundle.getString("questionId"));
-        bmobQuery.include("questionId,responder");
+        bmobQuery.include("responder,questionId");
         bmobQuery.order("-createdAt");
         bmobQuery.findObjects(QuestionItemActivityElinc.this, new FindListener<Answer>() {
             @Override
@@ -171,8 +172,11 @@ public class QuestionItemActivityElinc extends ActivityBase  implements View.OnC
     @Override
     public void onLoadMore() {
         // TODO Auto-generated method stub
-        BmobQuery<Answer> query =new BmobQuery<Answer>();
-        query.findObjects(QuestionItemActivityElinc.this, new FindListener<Answer>() {
+        BmobQuery<Answer> bmobQuery = new BmobQuery<Answer>();
+        bmobQuery.addWhereEqualTo("questionId", bundle.getString("questionId"));
+        bmobQuery.include("questionId,responder");
+        bmobQuery.order("-createdAt");
+        bmobQuery.findObjects(QuestionItemActivityElinc.this, new FindListener<Answer>() {
             @Override
             public void onSuccess(List<Answer> list) {
                 // TODO Auto-generated method stub
@@ -196,12 +200,16 @@ public class QuestionItemActivityElinc extends ActivityBase  implements View.OnC
     }
 
     private void queryMoreSearchList(int page){
-        BmobQuery<Answer> query =new BmobQuery<Answer>();
-        query.findObjects(QuestionItemActivityElinc.this, new FindListener<Answer>() {
+        BmobQuery<Answer> bmobQuery = new BmobQuery<Answer>();
+        bmobQuery.addWhereEqualTo("questionId", bundle.getString("questionId"));
+        bmobQuery.include("questionId,responder");
+        bmobQuery.order("-createdAt");
+        bmobQuery.findObjects(QuestionItemActivityElinc.this, new FindListener<Answer>() {
             @Override
             public void onSuccess(List<Answer> arg0) {
                 // TODO Auto-generated method stub
                 if (CollectionUtils.isNotNull(arg0)) {
+                    answer.clear();
                     adapter.addAll(arg0);
                 }
                 refreshLoad();
@@ -251,7 +259,6 @@ public class QuestionItemActivityElinc extends ActivityBase  implements View.OnC
     }
     public void submitAnswer(String a){
         User user = BmobUser.getCurrentUser(this, User.class);
-        System.out.println("123");
         Question question=new Question();
         question.setObjectId( bundle.getString("questionId"));
         System.out.println("4");
@@ -259,7 +266,6 @@ public class QuestionItemActivityElinc extends ActivityBase  implements View.OnC
         answer.setAnswerContent(a);
         answer.setQuestionId(question);
         answer.setResponder(user);
-        System.out.println("5");
         Tool.alert(QuestionItemActivityElinc.this, a);
         answer.save(QuestionItemActivityElinc.this, new SaveListener() {
             @Override
@@ -288,10 +294,39 @@ public class QuestionItemActivityElinc extends ActivityBase  implements View.OnC
         }
     }
     public void onRefresh() {
-        // TODO Auto-generated method stub
+        refreshList();
 
     }
 
+    public void refreshList(){
+        BmobQuery<Answer> bmobQuery = new BmobQuery<Answer>();
+        bmobQuery.addWhereEqualTo("questionId", bundle.getString("questionId"));
+        bmobQuery.include("questionId,responder");
+        bmobQuery.order("-createdAt");
+        bmobQuery.findObjects(QuestionItemActivityElinc.this, new FindListener<Answer>() {
+            @Override
+            public void onSuccess(List<Answer> arg0) {
+                // TODO Auto-generated method stub
+                if (CollectionUtils.isNotNull(arg0)) {
+                    answer.clear();
+                    adapter.addAll(arg0);
+                    mListView.stopRefresh();
+                }
+                refreshLoad();
+            }
+
+            @Override
+            public void onError(int arg0, String arg1) {
+                // TODO Auto-generated method stub
+                ShowLog("搜索更多用户出错:" + arg1);
+                mListView.setPullLoadEnable(false);
+                mListView.stopRefresh();
+                refreshLoad();
+
+            }
+
+        });
+    }
     @Override
     public void onClick(View v) {
 

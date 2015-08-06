@@ -45,13 +45,45 @@ public class NewQuestionActivityElinc extends ActivityBase {
         et_input_tags= (EditText) findViewById(R.id.et_input_tags);
     }
     private void initTagButton(){
-        Button btn_add_tag1= (Button) findViewById(R.id.btn_add_tag1);
-        btn_add_tag1.setOnClickListener(new View.OnClickListener() {
+        Button btn_add_food= (Button) findViewById(R.id.btn_add_food);
+        btn_add_food.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String a=et_input_tags.getText().toString();
-                if(a==""){a=a+",美食";}
-                else{a=a+"美食";}
+                if(a!="" && a!=null){a=a+",美食";}
+                else{a="美食";}
+                et_input_tags.setText(a);
+            }
+        });
+        Button btn_add_fun= (Button) findViewById(R.id.btn_add_fun);
+        btn_add_fun.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String a=et_input_tags.getText().toString();
+                if(a!="" && a!=null){a=a+",娱乐";}
+                else{a="娱乐";}
+                et_input_tags.setText(a);
+            }
+        });
+        Button btn_add_study= (Button) findViewById(R.id.btn_add_study);
+        btn_add_study.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String a=et_input_tags.getText().toString();
+                Tool.alert(NewQuestionActivityElinc.this,a);
+                System.out.println(a);
+                if(a!="" && a!=null){a=a+",学习";}
+                else{a="学习";}
+                et_input_tags.setText(a);
+            }
+        });       
+        Button btn_add_life= (Button) findViewById(R.id.btn_add_life);
+        btn_add_life.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String a=et_input_tags.getText().toString();
+                if(a!="" && a!=null){a=a+",生活";}
+                else{a="生活";}
                 et_input_tags.setText(a);
             }
         });

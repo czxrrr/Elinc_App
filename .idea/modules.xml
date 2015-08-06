@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Elinc_App-master8.3 17点5分.iml" filepath="$PROJECT_DIR$/Elinc_App-master8.3 17点5分.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Elinc_App-master8.5.iml" filepath="$PROJECT_DIR$/Elinc_App-master8.5.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
